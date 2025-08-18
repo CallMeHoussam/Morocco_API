@@ -46,7 +46,7 @@ A Django REST API providing information about Morocco’s cities, culture, and e
 
 ### Setup
 ```bash
-git clone https://github.com/yourusername/Morocco_API.git
+git clone https://github.com/CallMeHoussam/Morocco_API
 cd Morocco_API
 pip install -r requirements.txt
 python manage.py migrate
