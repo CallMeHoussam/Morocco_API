@@ -2,6 +2,7 @@ from rest_framework import generics, filters
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from .models import Event
 from .serializers import EventSerializer
+from django.http import HttpResponse
 
 # List and Create Events
 class EventListCreateView(generics.ListCreateAPIView):
@@ -20,3 +21,5 @@ class EventDetailView(generics.RetrieveUpdateDestroyAPIView):
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ["name", "location"]
     ordering_fields = ["date"]
+def home(request):
+    return HttpResponse("<h1>Welcome to Morocco_API </h1><p>Use /api/events/ or /api/users/</p>")

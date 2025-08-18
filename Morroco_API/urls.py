@@ -16,12 +16,27 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from events.views import home
+from django.shortcuts import redirect
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+@api_view(['GET'])
+def api_root(request, format=None):
+    return Response({
+        "events": request.build_absolute_uri('/api/events/'),
+        "users": request.build_absolute_uri('/api/users/'),
+        "token": request.build_absolute_uri('/api/token/'),
+        "token_refresh": request.build_absolute_uri('/api/token/refresh/'),
+    })
 urlpatterns = [
+    path('', home, name='home'),
+    path('', lambda request: redirect('/api/events/')),
     path('admin/', admin.site.urls),
     path('api/events/', include('events.urls')),
     path('api/users/', include('users.urls')),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path('api/token/', include('rest_framework_simplejwt.urls')),
 ]
