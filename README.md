@@ -35,3 +35,19 @@ local-event-finder-api/
 ├── manage.py
 └── requirements.txt
 ```
+## Morocco API 🇲🇦
+A Django REST API providing information about Morocco’s cities, culture, and events.
+
+### Features
+- JWT Authentication
+- Search & Filter
+- Pagination
+- Swagger Documentation
+
+### Setup
+```bash
+git clone https://github.com/yourusername/Morocco_API.git
+cd Morocco_API
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
