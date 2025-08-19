@@ -4,9 +4,9 @@
 # 📂 Project Structure
 
 ```
-local-event-finder-api/
+Morocco_API/
 │
-├── event_finder/         # Main project folder
+├── Morocco_API/         # Main project folder
 │   ├── __init__.py
 │   ├── settings.py
 │   ├── urls.py
