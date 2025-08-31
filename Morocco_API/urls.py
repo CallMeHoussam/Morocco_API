@@ -1,3 +1,5 @@
+import os
+import sys
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.decorators import api_view
@@ -11,20 +13,26 @@ from drf_yasg import openapi
 def api_root(request, format=None):
     return Response({
         "events": request.build_absolute_uri("/api/events/"),
+        "events_upcoming": request.build_absolute_uri("/api/events/upcoming/"),
         "cities": request.build_absolute_uri("/api/events/cities/"),
         "categories": request.build_absolute_uri("/api/events/categories/"),
-        "users": request.build_absolute_uri("/api/users/"),
+        "users_register": request.build_absolute_uri("/api/users/register/"),
         "token_obtain": request.build_absolute_uri("/api/token/"),
         "token_refresh": request.build_absolute_uri("/api/token/refresh/"),
         "docs_swagger": request.build_absolute_uri("/swagger/"),
         "docs_redoc": request.build_absolute_uri("/redoc/"),
+        "health": request.build_absolute_uri("/health/"),
     })
+
+@api_view(["GET"])
+def health(request):
+    return Response({"status": "ok"})
 
 schema_view = get_schema_view(
     openapi.Info(
         title="Morocco API",
         default_version="v1",
-        description="API for Morocco (events, cities, categories)",
+        description="Events in Moroccan cities with categories & JWT auth",
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),
@@ -32,6 +40,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path("", api_root, name="api-root"),
+    path("health/", health, name="health"),
     path("admin/", admin.site.urls),
 
     path("api/events/", include("events.urls")),
