@@ -204,12 +204,12 @@ Authorization: Bearer YOUR_ACCESS_TOKEN
 }
 ```
 
-[View Complete Test Documentation](https://docs.google.com/document/d/1q2GH3mEUzL2u7aC-ujAg4uMyPcsqD0-ioJ_4IX-HZHo/edit?usp=sharing)
+For more tests [Click here](https://docs.google.com/document/d/1q2GH3mEUzL2u7aC-ujAg4uMyPcsqD0-ioJ_4IX-HZHo/edit?usp=sharing)
 
 ## 🔧 Configuration
 
 ### Environment Variables
-```bash
+```py
 DJANGO_SECRET_KEY=your-secret-key-here
 DJANGO_DEBUG=True
 DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
@@ -217,7 +217,7 @@ DATABASE_URL=sqlite:///db.sqlite3
 ```
 
 ### External API Keys (Optional)
-```bash
+```py
 EVENTBRITE_TOKEN=your_eventbrite_token
 TICKETMASTER_KEY=your_ticketmaster_key
 ```
@@ -242,32 +242,6 @@ Access the Django admin at `http://127.0.0.1:8000/admin/` with superuser credent
 python create_sample_data.py
 ```
 
-## 📊 Database Schema
-
-The application uses three main models:
-- **User** - Custom user model with extended fields
-- **Event** - Event information with location and timing
-- **City/Category** - Reference data for events
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Django REST Framework team
-- Moroccan tourism and cultural organizations
-- ALX Backend Specialization program
-
 ---
 
-**Made with ❤️ for Morocco's vibrant event culture**
-```
+**Made For capstone project**
