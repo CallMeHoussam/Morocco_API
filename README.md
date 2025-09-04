@@ -13,7 +13,7 @@ A comprehensive Django REST API for discovering and managing events across Moroc
 - **👥 User Profiles** - Personal profiles with event statistics
 - **⚡ Performance Optimized** - Fast response times with optimized queries
 - **🛡️ Admin Moderation** - Event approval system for content control
-
+```
 ## 🏗️ Project Structure
 
 ```
