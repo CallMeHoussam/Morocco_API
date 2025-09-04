@@ -23,4 +23,8 @@ env/
 ENV/
 *.db
 backups/
+
+.venv/
 docker-compose.override.yml
+Database/
+*.sqlproj
