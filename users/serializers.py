@@ -2,13 +2,19 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from .models import CustomUser, UserProfile
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'email', 'first_name', 'last_name']
+
 class UserRegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, min_length=8, style={'input_type': 'password'})
-    password_confirm = serializers.CharField(write_only=True, style={'input_type': 'password'})
+    password = serializers.CharField(write_only=True, min_length=8)
+    password_confirm = serializers.CharField(write_only=True)
 
     class Meta:
         model = CustomUser
         fields = ["id", "username", "email", "first_name", "last_name", "password", "password_confirm"]
+        read_only_fields = ["id"]
         extra_kwargs = {
             'email': {'required': True},
             'first_name': {'required': False},
@@ -16,28 +22,26 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, attrs):
-        if attrs['password'] != attrs.pop('password_confirm'):
-            raise serializers.ValidationError({"password_confirm": "Passwords do not match"})
+        if attrs['password'] != attrs['password_confirm']:
+            raise serializers.ValidationError("Passwords do not match")
         
         if CustomUser.objects.filter(email=attrs['email']).exists():
-            raise serializers.ValidationError({"email": "A user with this email already exists"})
+            raise serializers.ValidationError("A user with this email already exists")
+        
+        if CustomUser.objects.filter(username=attrs['username']).exists():
+            raise serializers.ValidationError("A user with this username already exists")
         
         return attrs
 
     def create(self, validated_data):
-        user = CustomUser.objects.create_user(
-            username=validated_data["username"],
-            email=validated_data["email"],
-            password=validated_data["password"],
-            first_name=validated_data.get("first_name", ""),
-            last_name=validated_data.get("last_name", ""),
-        )
-        UserProfile.objects.get_or_create(user=user)
+        validated_data.pop('password_confirm')
+        password = validated_data.pop('password')
+        user = CustomUser.objects.create_user(password=password, **validated_data)
         return user
 
 class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField()
-    password = serializers.CharField(style={'input_type': 'password'})
+    password = serializers.CharField()
 
     def validate(self, attrs):
         username = attrs.get('username')
@@ -54,7 +58,7 @@ class UserLoginSerializer(serializers.Serializer):
             attrs['user'] = user
             return attrs
         else:
-            raise serializers.ValidationError("Must include 'username' and 'password'")
+            raise serializers.ValidationError("Must include username and password")
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -67,12 +71,9 @@ class UserDetailSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = CustomUser
-        fields = [
-            "id", "username", "email", "first_name", "last_name", 
-            "date_of_birth", "phone_number", "location", "website", "bio",
-            "is_verified", "created_at", "profile", "events_count"
-        ]
-        read_only_fields = ["id", "is_verified", "created_at"]
+        fields = ["id", "username", "email", "first_name", "last_name", 
+                 "date_of_birth", "phone_number", "location", "website", "bio",
+                 "is_verified", "created_at", "profile", "events_count"]
 
     def get_events_count(self, obj):
         return obj.events.count()
@@ -80,19 +81,15 @@ class UserDetailSerializer(serializers.ModelSerializer):
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ["first_name", "last_name", "email", "phone_number", "location", "website", "bio", "date_of_birth"]
-
-    def validate_email(self, value):
-        if CustomUser.objects.filter(email=value).exclude(id=self.instance.id).exists():
-            raise serializers.ValidationError("A user with this email already exists")
-        return value
+        fields = ["first_name", "last_name", "email", "phone_number", 
+                 "location", "website", "bio", "date_of_birth"]
 
 class PasswordChangeSerializer(serializers.Serializer):
-    old_password = serializers.CharField(style={'input_type': 'password'})
-    new_password = serializers.CharField(min_length=8, style={'input_type': 'password'})
-    new_password_confirm = serializers.CharField(style={'input_type': 'password'})
+    old_password = serializers.CharField()
+    new_password = serializers.CharField(min_length=8)
+    new_password_confirm = serializers.CharField()
 
     def validate(self, attrs):
         if attrs['new_password'] != attrs['new_password_confirm']:
-            raise serializers.ValidationError({"new_password_confirm": "Passwords do not match"})
+            raise serializers.ValidationError("Passwords do not match")
         return attrs

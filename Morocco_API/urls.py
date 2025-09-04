@@ -14,20 +14,22 @@ from django.utils import timezone
 @api_view(["GET"])
 def api_root(request, format=None):
     return Response({
-        "v1": {
-            "events": request.build_absolute_uri("/api/v1/events/"),
-            "events_upcoming": request.build_absolute_uri("/api/v1/events/upcoming/"),
-            "cities": request.build_absolute_uri("/api/v1/events/cities/"),
-            "categories": request.build_absolute_uri("/api/v1/events/categories/"),
+        "User": {
             "users_register": request.build_absolute_uri("/api/v1/users/register/"),
+            "users_login": request.build_absolute_uri("/api/v1/users/login/"),
             "token_obtain": request.build_absolute_uri("/api/v1/token/"),
             "token_refresh": request.build_absolute_uri("/api/v1/token/refresh/"),
             "token_verify": request.build_absolute_uri("/api/v1/token/verify/"),
         },
+        "Events":{"events": request.build_absolute_uri("/api/v1/events/"),
+            "events_upcoming": request.build_absolute_uri("/api/v1/events/upcoming/"),
+            "cities": request.build_absolute_uri("/api/v1/events/cities/"),
+            "categories": request.build_absolute_uri("/api/v1/events/categories/"),},
         "docs_swagger": request.build_absolute_uri("/swagger/"),
         "docs_redoc": request.build_absolute_uri("/redoc/"),
         "health": request.build_absolute_uri("/health/"),
         "admin": request.build_absolute_uri("/admin/"),
+        
     })
 
 @api_view(["GET"])
@@ -38,8 +40,6 @@ def health(request):
         "timestamp": timezone.now().isoformat(),
         "service": "Morocco API"
     }
-    
-    # Database health check
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT 1")
@@ -48,8 +48,6 @@ def health(request):
         status_info["database"] = "unhealthy"
         status_info["database_error"] = str(e)
         status_info["status"] = "degraded"
-    
-    # Cache health check (if Redis is configured)
     try:
         from django.core.cache import cache
         cache.set('health_check', 'ok', 5)
@@ -68,8 +66,7 @@ schema_view = get_schema_view(
         title="Morocco API",
         default_version="v1",
         description="Events in Moroccan cities with categories & JWT auth",
-        terms_of_service="https://www.example.com/terms/",
-        contact=openapi.Contact(email="contact@example.com"),
+        contact=openapi.Contact(email="contact@evoless.com"),
         license=openapi.License(name="BSD License"),
     ),
     public=True,
@@ -80,8 +77,6 @@ urlpatterns = [
     path("", api_root, name="api-root"),
     path("health/", health, name="health"),
     path("admin/", admin.site.urls),
-
-    # API v1 endpoints
     path("api/v1/", include([
         path("", api_root, name="api-root-v1"),
         path("events/", include("events.urls")),
@@ -90,27 +85,12 @@ urlpatterns = [
         path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
         path("token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     ])),
-    
-    # Backward compatibility with old endpoints
     path("api/", include([
         path("", api_root, name="api-root-legacy"),
         path("events/", include("events.urls")),
         path("users/", include("users.urls")),
+        path('api/auth/', include('users.urls')),
     ])),
-
-    # Documentation
     path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
-    
-    # Debug toolbar (development only)
 ]
-
-# Add debug toolbar in development
-if os.getenv('DJANGO_ENVIRONMENT', 'development') == 'development':
-    try:
-        import debug_toolbar
-        urlpatterns += [
-            path('__debug__/', include(debug_toolbar.urls)),
-        ]
-    except ImportError:
-        pass
