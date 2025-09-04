@@ -1,4 +1,4 @@
-# Morocco Events API 🇲🇦
+# Morocco Events API 
 
 A comprehensive Django REST API for discovering and managing events across Morocco. Features JWT authentication, advanced search/filtering, and event management capabilities.
 
