@@ -23,7 +23,7 @@ env/
 ENV/
 *.db
 backups/
-
+migrations/
 .venv/
 docker-compose.override.yml
 Database/
